@@ -1,0 +1,8 @@
+setup.py
+Skvipps/__init__.py
+Skvipps/views.py
+Skvipps.egg-info/PKG-INFO
+Skvipps.egg-info/SOURCES.txt
+Skvipps.egg-info/dependency_links.txt
+Skvipps.egg-info/requires.txt
+Skvipps.egg-info/top_level.txt
