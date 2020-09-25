@@ -21,6 +21,7 @@ def login():
         return redirect(url_for('index'))
     return render_template('login.html', title='Sign In', form=form)
 
+
 @app.route('/logout')
 def logout():
     logout_user()
@@ -49,5 +50,5 @@ def index():
     if 1 == 1:
         transaksasjoner=[]
         user = 1
-        return render_template('index.html', title='Home', transaksasjoner=transaksasjoner)
+        return render_template('index.html', title='Home')
 
