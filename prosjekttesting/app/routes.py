@@ -13,6 +13,8 @@ def login():
         return redirect('/login')
     return render_template('login.html', title='Sign In', form=form)
 
+    
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
@@ -23,9 +25,11 @@ def register():
 
 @app.route('/')
 @app.route('/index')
+
 def index():
-    user = {'username': 'Penal Berit'}
-    transaksasjoner = [
+    if userloggedin == True:
+        user = {'username': 'Penal Berit'}
+        transaksasjoner = [
         {
             'sender': {'username': 'John'},
             'mottaker': {'username': 'Grøtta grav'}
@@ -35,5 +39,7 @@ def index():
             'mottaker': {'username': 'Gromlegrau'}
         }
     ]
+    else: 
+        return redirect('/login')
     return render_template('index.html', title='Home', user=user, transaksasjoner=transaksasjoner)
 
