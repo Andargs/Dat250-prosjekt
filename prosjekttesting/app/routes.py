@@ -8,8 +8,8 @@ from app.forms import LoginForm, RegisterForm
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        flash('Login requested for user {}, remember_me={}'.format(
-            form.username.data, form.remember_me.data))
+        flash('Login requested for user {}'.format(
+            form.username.data))
         return redirect('/login')
     return render_template('login.html', title='Sign In', form=form)
 
@@ -25,8 +25,8 @@ def register():
 
 @app.route('/')
 @app.route('/index')
-
 def index():
+    userloggedin = False
     if userloggedin == True:
         user = {'username': 'Penal Berit'}
         transaksasjoner = [
