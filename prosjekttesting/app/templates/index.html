@@ -1,9 +1,8 @@
-
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Hi, {{ user.username }}!</h1>
-    {% for transaksasjoner in transaksasjoner %}
-    <div><p>{{ transaksasjoner.sender.username }} sendte penger til: <b>{{ transaksasjoner.mottaker.username }}</b></p></div>
+    <h1>Hi, {{ current_user.username }}!</h1>
+    {% for transaksasjon in transaksasjoner %}
+    <div><p>{{ transaksasjon.author.username }} says: <b>{{ transaksasjon.body }}</b></p></div>
     {% endfor %}
 {% endblock %}

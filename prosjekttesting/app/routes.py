@@ -20,7 +20,7 @@ def login():
         login_user(user, remember=form.remember_me.data)
         return redirect(url_for('index'))
     return render_template('login.html', title='Sign In', form=form)
-    
+
 @app.route('/logout')
 def logout():
     logout_user()
@@ -38,22 +38,10 @@ def register():
 
 @app.route('/')
 @app.route('/index')
-@login_required
+#@login_required
 def index():
-    userloggedin = False
-    if userloggedin == True:
-        user = {'username': 'Penal Berit'}
-        transaksasjoner = [
-        {
-            'sender': {'username': 'John'},
-            'mottaker': {'username': 'Grøtta grav'}
-        },
-        {
-            'sender': {'username': 'Susan'},
-            'mottaker': {'username': 'Gromlegrau'}
-        }
-    ]
-    else: 
-        return redirect('/login')
-    return render_template('index.html', title='Home', user=user, transaksasjoner=transaksasjoner)
+    if 1 == 1:
+        transaksasjoner=[]
+        user = 1
+        return render_template('index.html', title='Home', transaksasjoner=transaksasjoner)
 
