@@ -65,3 +65,10 @@ div{
     place-content: start end;
     
 }
+
+label{
+    font-family: serif; 
+    color: black; 
+    margin: 1rem 0;
+
+}
