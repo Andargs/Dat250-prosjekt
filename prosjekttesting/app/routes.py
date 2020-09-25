@@ -5,6 +5,7 @@ from app.forms import LoginForm, RegisterForm
 
 
 @app.route('/login', methods=['GET', 'POST'])
+
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -25,6 +26,7 @@ def register():
 
 @app.route('/')
 @app.route('/index')
+@login_required
 def index():
     userloggedin = False
     if userloggedin == True:
