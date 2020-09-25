@@ -24,7 +24,7 @@ nav ul li a, nav ul li span, header .action { display: block; padding: 0.5rem; }
 input.danger { color: #cc2f2e; }
 input[type=submit] { align-self: start; min-width: 10em; }
 br{font-family: serif; color: lightseagreen; margin: 1rem 0; }
-div{font-family: serif; color:  blue; margin: 1rem 0; }
+/* div{font-family: serif; color:  blue; margin: 1rem 0; } */
 p{font-family: serif; color: black; margin: 1rem 0; }
 a {
     background-color:   white;
@@ -37,10 +37,10 @@ a {
     font-size: 16px;
     margin: 4px 2px;
     border-radius: 4px;
-  }
+}
 
-  .button{
-    background-color:   white;
+.button{
+    background-color:  lightgray;
     border: none;
     color: lightskyblue;
     padding: 20px;
@@ -50,5 +50,18 @@ a {
     font-size: 16px;
     margin: 4px 2px;
     border-radius: 4px;
-  }
+
+}
   
+div{
+    border-radius: 25px;
+    background: lightskyblue;
+    padding: 20px;
+    width: 1500px;
+    height: 50px;
+    font-family: serif; 
+    color:  blue; 
+    margin: 1rem 0; 
+    place-content: start end;
+    
+}
