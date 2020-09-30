@@ -4,7 +4,7 @@ from flask import render_template, flash, redirect
 from app.forms import LoginForm, RegistrationForm, TransactionForm
 from app.models import User, Transaction, Account
 from flask_login import current_user, login_user, login_required, logout_user
-
+from flask import escape
 
 
         
@@ -21,8 +21,28 @@ def login():
             flash('Invalid username or password')
             return redirect('login')
         login_user(user, remember=form.remember_me.data)
-        return redirect('index')
+        #return redirect('index')
+        return redirect('contact')
     return render_template('login.html', title='Sign In', form=form)
+    #return render_template('contact.html')
+
+
+@app.route('/contact', methods=['GET', 'POST'])
+def epostverifisering():
+    if current_user.is_authenticated:
+        kode = ''.join(random.choice(string.ascii_letters) for _ in range(10))
+        msg = Message("Feedback", recipients=[app.config[current_user.email]])
+        msg.body = "Code:{}\n Use this code to authenticate the user".format(kode)
+        mail.send(msg)
+        if form.validate_on_submit():
+            u = escape(str(epostkode))
+            if u == kode:
+                return redirect('index')
+            else:
+                return redirect('login')
+                print("Feil kode, prøv igjen")
+    return render_template('contact.html')
+
 
 
 @app.route('/logout')
@@ -48,6 +68,7 @@ def register():
         flash('Congratulations, you are now a registered user!')
         return redirect('login')
     return render_template('register.html', title='Register', form=form)
+    
 
 @app.route('/')
 @app.route('/index', methods=['GET', ])
