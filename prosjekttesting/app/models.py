@@ -15,7 +15,6 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
-    transactions = db.relationship('Transaction', backref='author', lazy='dynamic')
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -26,15 +25,24 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+class Account(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64),index=True,unique=True)
+    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    balance = db.Column(db.String(128))
+    transactions = db.relationship('Transaction', backref='account')
 
 class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    body = db.Column(db.String(140))
+    ammount = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    receiving = db.Column(db.Integer, db.ForeignKey('account.id'))
+    sender = db.Column(db.Integer, dbForeign)
+    
 
     def __repr__(self):
-        return '<Transaction {}>'.format(self.body)
+        return '{}:{} overførte {},- til {}>'.format(self.timestamp, self.sender, self.ammount, self.receiving)
+    
 
 #class transak(db.Model):
  #   body = db.Column(db.Integer)
