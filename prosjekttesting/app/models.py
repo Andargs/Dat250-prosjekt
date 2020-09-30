@@ -37,7 +37,7 @@ class Transaction(db.Model):
     ammount = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     receiving = db.Column(db.Integer, db.ForeignKey('account.id'))
-    sender = db.Column(db.Integer, dbForeign)
+    sender = db.Column(db.Integer)
     
 
     def __repr__(self):

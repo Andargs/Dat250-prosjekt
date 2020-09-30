@@ -1,11 +1,13 @@
 
 from app import app, db
 from flask import render_template, flash, redirect
-from app.forms import LoginForm, RegistrationForm
-from app.models import User
+from app.forms import LoginForm, RegistrationForm, TransactionForm
+from app.models import User, Transaction, Account
 from flask_login import current_user, login_user, login_required, logout_user
 
 
+
+        
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -48,11 +50,23 @@ def register():
     return render_template('register.html', title='Register', form=form)
 
 @app.route('/')
-@app.route('/index')
+@app.route('/index', methods=['GET', ])
 @login_required
 def index():
     if current_user.is_authenticated:
-        form = 
+    form = TransactionForm(current_user)
+    if form.validate_on_submit():
+        r = escape(int(form.receiver.data))
+        a = escape(int(form.ammount_to_transfer.data))
+        s = escape(int(form.sending.data))
+        transaction = Transaction(receiving=r,ammount=a,sender=s)
+        db.session.add(transaction)
+        db.session.commit()
+        flash('Transfer complete')
+        return redirect('index')
+
         
-        return render_template('index.html', title='Home')
+    return render_template('index.html', title='Home')
+
+
 
