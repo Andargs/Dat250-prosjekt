@@ -54,7 +54,7 @@ def register():
 @login_required
 def index():
     if current_user.is_authenticated:
-    form = TransactionForm(current_user)
+        form = TransactionForm(current_user)
     if form.validate_on_submit():
         r = escape(int(form.receiver.data))
         a = escape(int(form.ammount_to_transfer.data))
