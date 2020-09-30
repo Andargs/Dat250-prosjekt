@@ -12,8 +12,10 @@ def login():
         return redirect('index')
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        if user is None or not user.check_password(form.password.data):
+        u = escape(str(form.username.data))
+        p = escape(str(form.password.data))
+        user = User.query.filter_by(username=u).first()
+        if user is None or not user.check_password(p):
             flash('Invalid username or password')
             return redirect('login')
         login_user(user, remember=form.remember_me.data)
@@ -34,8 +36,11 @@ def register():
         return redirect('index')
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
-        user.set_password(form.password.data)
+        u = escape(str(form.username.data))
+        e = escape(str(form.email.data))
+        user = User(username=u, email=e)
+        p = escape(str(form.password.data))
+        user.set_password(p)
         db.session.add(user)
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
