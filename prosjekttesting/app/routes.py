@@ -51,7 +51,7 @@ def register():
 @app.route('/index')
 @login_required
 def index():
-    if current_user.is_autheticated:
+    if current_user.is_authenticated:
         form = 
         
         return render_template('index.html', title='Home')
