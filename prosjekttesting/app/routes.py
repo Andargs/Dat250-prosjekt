@@ -23,12 +23,13 @@ def login():
         login_user(user, remember=form.remember_me.data)
         #return redirect('index')
         return redirect('contact')
-    return render_template('login.html', title='Sign In', form=form)
-    #return render_template('contact.html')
+    #return render_template('login.html', title='Sign In', form=form)
+    return render_template('contact.html')
 
 
 @app.route('/contact', methods=['GET', 'POST'])
 def epostverifisering():
+    form = EmailVerifForm()
     if current_user.is_authenticated:
         kode = ''.join(random.choice(string.ascii_letters) for _ in range(10))
         msg = Message("Feedback", recipients=[app.config[current_user.email]])
@@ -36,11 +37,11 @@ def epostverifisering():
         mail.send(msg)
         if form.validate_on_submit():
             u = escape(str(epostkode))
-            if u == kode:
+            if u == code:
                 return redirect('index')
             else:
-                return redirect('login')
-                print("Feil kode, prøv igjen")
+                return redirect('logout')
+                print("Wrong code, please try again")
     return render_template('contact.html')
 
 

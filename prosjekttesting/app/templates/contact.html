@@ -4,8 +4,15 @@
     <body>
         <h1>Email Verification</h1>
         <p>Please enter the code you recieved in your email</p>
-        <form name="epostkode", method='GET'>
-        <input type="text"/>
-        </form>
+        <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            
+            <p>
+                {{ form.EmailVerifForm.label }}<br>
+                {{ form.EmailVerifForm(size=32) }}<br>
+                {% for error in form.emailverif.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
 </body>
 {% endblock %}
