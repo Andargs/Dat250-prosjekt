@@ -1,7 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField, SelectField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
-from app.models import User
+from app.models import User, Transaction, Account
+from flask_login import current_user
+
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -33,6 +35,7 @@ class ForgotForm(FlaskForm):
     submit = SubmitField('Help me reset my password!')
 
 class TransactionForm(FlaskForm):
-    receiver = StringField('Receiver', validators=[DataRequired()])
-    ammount = IntegerField('Ammount', validators=[DataRequired()])
-    # From account: drop-down-meny med 
+    receiver = IntegerField('Receiver', validators=[DataRequired()])
+    ammount_to_transfer = IntegerField('Ammount', validators=[DataRequired()])
+    sending = SelectField('Send from', validators=[DataRequired()], choices=Account.query.filter_by(owner_id=current_user))
+    submit = SubmitField('Send')
