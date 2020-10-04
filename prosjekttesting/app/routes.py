@@ -1,10 +1,13 @@
 
-from app import app, db
+from app import app, db, mail
 from flask import render_template, flash, redirect
-from app.forms import LoginForm, RegistrationForm, TransactionForm
+from app.forms import LoginForm, RegistrationForm, EmailVerifForm #,TransactionForm
 from app.models import User, Transaction, Account
 from flask_login import current_user, login_user, login_required, logout_user
-from flask import escape
+from flask import escape, request
+import random,string
+from flask_mail import Mail, Message
+import pyotp
 
 
         
@@ -23,26 +26,32 @@ def login():
         login_user(user, remember=form.remember_me.data)
         #return redirect('index')
         return redirect('contact')
-    #return render_template('login.html', title='Sign In', form=form)
-    return render_template('contact.html')
+    return render_template('login.html', title='Sign In', form=form)
+    #return render_template('contact.html')
 
-
+code = ''
 @app.route('/contact', methods=['GET', 'POST'])
 def epostverifisering():
+    global code
     form = EmailVerifForm()
     if current_user.is_authenticated:
-        kode = ''.join(random.choice(string.ascii_letters) for _ in range(10))
-        msg = Message("Feedback", recipients=[app.config[current_user.email]])
-        msg.body = "Code:{}\n Use this code to authenticate the user".format(kode)
-        mail.send(msg)
-        if form.validate_on_submit():
-            u = escape(str(epostkode))
-            if u == code:
-                return redirect('index')
-            else:
-                return redirect('logout')
-                print("Wrong code, please try again")
-    return render_template('contact.html')
+        #code = str(''.join(random.choice(string.ascii_letters) for _ in range(10)))
+       #codo = str(code)
+        if request.method=='GET':
+            code = str(pyotp.random_base32())
+            msg = Message("Feedback", recipients=[current_user.email])
+            msg.body = "Code:{}\n Use this code to authenticate the user".format(code)
+            mail.send(msg)
+        else:
+            if form.validate_on_submit():
+                u = escape(str(form.code.data))
+                if u == code:
+                    print('You entered the correct code, you will be transfered shortly')
+                    return redirect('index')
+                else:
+                    return redirect('contact')
+                    print('Wrong code, please try again')
+    return render_template('contact.html', title='emailverifisering', form=form)
 
 
 
@@ -75,8 +84,10 @@ def register():
 @app.route('/index', methods=['GET', ])
 @login_required
 def index():
-    if current_user.is_authenticated:
-        form = TransactionForm(current_user)
+#    if current_user.is_authenticated:
+#        form = TransactionForm(current_user)
+    if current_user.id is not Account.id:
+        return redirect('logout')
     if form.validate_on_submit():
         r = escape(int(form.receiver.data))
         a = escape(int(form.ammount_to_transfer.data))

@@ -34,12 +34,12 @@ class ForgotForm(FlaskForm):
     e_post = StringField('E-mail', validators=[DataRequired()])
     submit = SubmitField('Help me reset my password!')
 
-class TransactionForm(FlaskForm):
-    receiver = IntegerField('Receiver', validators=[DataRequired()])
-    ammount_to_transfer = IntegerField('Ammount', validators=[DataRequired()])
-    sending = SelectField('Send from', validators=[DataRequired()], choices=Account.query.filter_by(owner_id=current_user))
-    submit = SubmitField('Send')
+#class TransactionForm(FlaskForm):
+#    receiver = IntegerField('Receiver', validators=[DataRequired()])
+#    ammount_to_transfer = IntegerField('Ammount', validators=[DataRequired()])
+#    sending = SelectField('Send from', validators=[DataRequired()], choices=Account.query.filter_by(owner_id=current_user))
+#    submit = SubmitField('Send')
 
 class EmailVerifForm(FlaskForm):
-    code = IntegerField('Recieved code', valdators=[DataRequired()])
-    submit = SubmitField('Send')
+    code = StringField('Recieved code', validators=[DataRequired()])
+    submit = SubmitField('Submit')

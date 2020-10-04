@@ -13,7 +13,7 @@ app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = 'skvipps@gmail.com'
 app.config['MAIL_DEFAULT_SENDER'] = 'skvipps@gmail.com'
-app.config['MAIL_PASSWORD'] = 'Gamlingspunk'
+app.config['MAIL_PASSWORD'] = 'Dromedarkrom'
 
 
 db = SQLAlchemy(app)
@@ -22,5 +22,6 @@ migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 mail = Mail(app)
+mail.init_app(app)
 
 from app import routes, models
