@@ -1,13 +1,16 @@
 
-from app import app, db
+from app import app, db, mail, Message
 from flask import render_template, flash, redirect
 from app.forms import LoginForm, RegistrationForm, TransactionForm
 from app.models import User, Transaction, Account
 from flask_login import current_user, login_user, login_required, logout_user
 from flask import escape
+import random,string
 
 
-        
+
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -29,6 +32,7 @@ def login():
 
 @app.route('/contact', methods=['GET', 'POST'])
 def epostverifisering():
+    
     if current_user.is_authenticated:
         kode = ''.join(random.choice(string.ascii_letters) for _ in range(10))
         msg = Message("Feedback", recipients=[app.config[current_user.email]])
@@ -71,23 +75,42 @@ def register():
     
 
 @app.route('/')
-@app.route('/index', methods=['GET', ])
+@app.route('/index', methods=['GET', 'POST'])
 @login_required
 def index():
     if current_user.is_authenticated:
-        form = TransactionForm(current_user)
+        form = TransactionForm()
+    
     if form.validate_on_submit():
         r = escape(int(form.receiver.data))
         a = escape(int(form.ammount_to_transfer.data))
         s = escape(int(form.sending.data))
-        transaction = Transaction(receiving=r,ammount=a,sender=s)
+        transaction = Transaction(ammount=a, receiver=r,sender=s)
+        Transaction.transaction(a,r,s)
         db.session.add(transaction)
         db.session.commit()
-        flash('Transfer complete')
         return redirect('index')
 
         
-    return render_template('index.html', title='Home')
+    return render_template('index.html', title='Home', form=form)
 
+@app.route('/newaccount', methods=['GET', 'POST'])
+@login_required
+def index():
+    if current_user.is_authenticated:
+        form = TransactionForm()
+    
+    if form.validate_on_submit():
+        r = escape(int(form.receiver.data))
+        a = escape(int(form.ammount_to_transfer.data))
+        s = escape(int(form.sending.data))
+        transaction = Transaction(ammount=a, receiver=r,sender=s)
+        Transaction.transaction(a,r,s)
+        db.session.add(transaction)
+        db.session.commit()
+        return redirect('index')
+
+        
+    return render_template('index.html', title='Home', form=form)
 
 

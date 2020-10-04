@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField, SelectField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
+from wtforms_sqlalchemy.fields import QuerySelectField
 from app.models import User, Transaction, Account
 from flask_login import current_user
 
@@ -37,5 +38,6 @@ class ForgotForm(FlaskForm):
 class TransactionForm(FlaskForm):
     receiver = IntegerField('Receiver', validators=[DataRequired()])
     ammount_to_transfer = IntegerField('Ammount', validators=[DataRequired()])
-    sending = SelectField('Send from', validators=[DataRequired()], choices=Account.query.filter_by(owner_id=current_user))
+    sending = QuerySelectField('Account',validators=[DataRequired()], query_factory=Transaction.getAccounts)
     submit = SubmitField('Send')
+    

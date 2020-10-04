@@ -1,8 +1,31 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Hi, {{ current_user.username }}!</h1>
-    {% for transaksasjon in transaksasjoner %}
-    <div><p>{{ transaksasjon.author.username }} says: <b>{{ transaksasjon.body }}</b></p></div>
-    {% endfor %}
+    <h1>Sign In</h1>
+    <form action="" method="post" novalidate>
+        
+        <p>
+            {{ form.receiver.label }}<br>
+            {{ form.receiver(size=32) }}<br>
+             {% for error in form.receiver.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.ammount_to_transfer.label }}<br>
+            {{ form.ammount_to_transfer(size=32) }}<br>
+            {% for error in form.ammount_to_transfer.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>  
+        <p>
+            {{ form.sending.label }}<br>
+            {{ form.sending }}<br>
+            {% for error in form.ammount_to_transfer.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>     
+        <p>{{ form.submit() }}</p>
+    </form>
+    <p>New User? <a href="{{ url_for('register') }}">Click to Register!</a></p>
 {% endblock %}
