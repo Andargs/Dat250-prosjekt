@@ -1,14 +1,25 @@
 
+<<<<<<< HEAD
 from app import app, db, mail, Message
+=======
+from app import app, db, mail
+>>>>>>> f696bf6587f5b2a59a599c39d5a9353c8cb29e71
 from flask import render_template, flash, redirect
-from app.forms import LoginForm, RegistrationForm, TransactionForm
+from app.forms import LoginForm, RegistrationForm, EmailVerifForm #,TransactionForm
 from app.models import User, Transaction, Account
 from flask_login import current_user, login_user, login_required, logout_user
+<<<<<<< HEAD
 from flask import escape
 import random,string
 
 
 
+=======
+from flask import escape, request
+import random,string
+from flask_mail import Mail, Message
+import pyotp
+>>>>>>> f696bf6587f5b2a59a599c39d5a9353c8cb29e71
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -29,23 +40,33 @@ def login():
     return render_template('login.html', title='Sign In', form=form)
     #return render_template('contact.html')
 
-
+code = ''
 @app.route('/contact', methods=['GET', 'POST'])
 def epostverifisering():
+<<<<<<< HEAD
     
+=======
+    global code
+    form = EmailVerifForm()
+>>>>>>> f696bf6587f5b2a59a599c39d5a9353c8cb29e71
     if current_user.is_authenticated:
-        kode = ''.join(random.choice(string.ascii_letters) for _ in range(10))
-        msg = Message("Feedback", recipients=[app.config[current_user.email]])
-        msg.body = "Code:{}\n Use this code to authenticate the user".format(kode)
-        mail.send(msg)
-        if form.validate_on_submit():
-            u = escape(str(epostkode))
-            if u == kode:
-                return redirect('index')
-            else:
-                return redirect('login')
-                print("Feil kode, prøv igjen")
-    return render_template('contact.html')
+        #code = str(''.join(random.choice(string.ascii_letters) for _ in range(10)))
+       #codo = str(code)
+        if request.method=='GET':
+            code = str(pyotp.random_base32())
+            msg = Message("Feedback", recipients=[current_user.email])
+            msg.body = "Code:{}\n Use this code to authenticate the user".format(code)
+            mail.send(msg)
+        else:
+            if form.validate_on_submit():
+                u = escape(str(form.code.data))
+                if u == code:
+                    print('You entered the correct code, you will be transfered shortly')
+                    return redirect('index')
+                else:
+                    return redirect('contact')
+                    print('Wrong code, please try again')
+    return render_template('contact.html', title='emailverifisering', form=form)
 
 
 
@@ -81,6 +102,10 @@ def index():
     if current_user.is_authenticated:
         form = TransactionForm()
     
+#    if current_user.is_authenticated:
+#        form = TransactionForm(current_user)
+    if current_user.id is not Account.id:
+        return redirect('logout')
     if form.validate_on_submit():
         r = escape(int(form.receiver.data))
         a = escape(int(form.ammount_to_transfer.data))

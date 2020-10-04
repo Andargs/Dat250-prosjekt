@@ -41,3 +41,12 @@ class TransactionForm(FlaskForm):
     sending = QuerySelectField('Account',validators=[DataRequired()], query_factory=Transaction.getAccounts)
     submit = SubmitField('Send')
     
+#class TransactionForm(FlaskForm):
+#    receiver = IntegerField('Receiver', validators=[DataRequired()])
+#    ammount_to_transfer = IntegerField('Ammount', validators=[DataRequired()])
+#    sending = SelectField('Send from', validators=[DataRequired()], choices=Account.query.filter_by(owner_id=current_user))
+#    submit = SubmitField('Send')
+
+class EmailVerifForm(FlaskForm):
+    code = StringField('Recieved code', validators=[DataRequired()])
+    submit = SubmitField('Submit')
