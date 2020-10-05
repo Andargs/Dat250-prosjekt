@@ -1,7 +1,7 @@
 
 from app import app, db, mail
 from flask import render_template, flash, redirect
-from app.forms import LoginForm, RegistrationForm, EmailVerifForm #,TransactionForm
+from app.forms import LoginForm, RegistrationForm, EmailVerifForm, TransactionForm, NewaccForm
 from app.models import User, Transaction, Account
 from flask_login import current_user, login_user, login_required, logout_user
 from flask import escape, request
@@ -48,8 +48,8 @@ def epostverifisering():
                     print('You entered the correct code, you will be transfered shortly')
                     return redirect('index')
                 else:
+
                     return redirect('contact')
-                    print('Wrong code, please try again')
     return render_template('contact.html', title='emailverifisering', form=form)
 
 
@@ -86,8 +86,8 @@ def index():
     if current_user.is_authenticated:
         form = TransactionForm()
     
-    if current_user.username is not Account.owner_name:
-        return redirect('index')
+    #if current_user.username is not Account.owner_name:
+     #   return redirect('index')
     if form.validate_on_submit():
         r = escape(int(form.receiver.data))
         a = escape(int(form.ammount_to_transfer.data))
@@ -101,23 +101,23 @@ def index():
         
     return render_template('index.html', title='Home', form=form)
 
-#@app.route('/newaccount', methods=['GET', 'POST'])
-#@login_required
-#def index():
- #   if current_user.is_authenticated:
-  #      form = TransactionForm()
-   # 
-    #if form.validate_on_submit():
-     #   r = escape(int(form.receiver.data))
-      #  a = escape(int(form.ammount_to_transfer.data))
-       # s = escape(int(form.sending.data))
-        #transaction = Transaction(ammount=a, receiver=r,sender=s)
-        #Transaction.transaction(a,r,s)
-        #db.session.add(transaction)
-        #db.session.commit()
-        #return redirect('index')
+@app.route('/newaccount', methods=['GET', 'POST'])
+@login_required
+def newaccount():
+    if current_user.is_authenticated:
+        form = NewaccForm()
+    else:
+        return redirect('index')
+    
+    if form.validate_on_submit():
+        a = escape(str(form.accountname.data))
+        b = escape(int(form.balance.data))
+        account = Account(name=a, balance=b, owner_name=current_user.username)
+        db.session.add(account)
+        db.session.commit()
+        return redirect('index')
 
         
-    #return render_template('index.html', title='Home', form=form)
+    return render_template('newaccount.html', title='New Account', form=form)
 
 
