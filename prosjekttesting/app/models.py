@@ -29,6 +29,7 @@ class Account(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64),index=True,unique=True)
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    owner_name = db.Column(db.String(64), db.ForeignKey('user.username'))
     balance = db.Column(db.String(128))
     transactions = db.relationship('Transaction', backref='acc')
 

@@ -86,10 +86,8 @@ def index():
     if current_user.is_authenticated:
         form = TransactionForm()
     
-#    if current_user.is_authenticated:
-#        form = TransactionForm(current_user)
-    if current_user.id is not Account.id:
-        return redirect('logout')
+    if current_user.username is not Account.owner_name:
+        return redirect('index')
     if form.validate_on_submit():
         r = escape(int(form.receiver.data))
         a = escape(int(form.ammount_to_transfer.data))
