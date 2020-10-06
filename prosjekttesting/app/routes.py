@@ -1,5 +1,5 @@
 
-from app import app, db, mail
+from app import app, db, mail, limiter
 from flask import render_template, flash, redirect
 from app.forms import LoginForm, RegistrationForm, EmailVerifForm #,TransactionForm
 from app.models import User, Transaction, Account
@@ -10,7 +10,11 @@ from flask_mail import Mail, Message
 import pyotp
 
 
+
 @app.route('/login', methods=['GET', 'POST'])
+@limiter.limit("200/day")
+@limiter.limit("30/hour")
+@limiter.limit("5/minute")
 def login():
     if current_user.is_authenticated:
         return redirect('index')
@@ -80,14 +84,16 @@ def register():
     
 
 @app.route('/')
-@app.route('/index', methods=['GET', 'POST'])
+@app.route('/index', methods=['GET', 'POST']) #index<username>
 @login_required
-def index():
+def index():                  #index(username)
     if current_user.is_authenticated:
         form = TransactionForm()
     
-    if current_user.username is not Account.owner_name:
-        return redirect('index')
+    #if current_user.username is not index.username:
+    #    return redirect('index<username>')
+    if current_user.is_active is False:
+        return redirect('login')
     if form.validate_on_submit():
         r = escape(int(form.receiver.data))
         a = escape(int(form.ammount_to_transfer.data))
