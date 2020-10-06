@@ -12,6 +12,11 @@ class LoginForm(FlaskForm):
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Sign In')
 
+class NewaccForm(FlaskForm):
+    accountname = StringField('Account name', validators=[DataRequired()])
+    balance = IntegerField('Account', default=100, validators=[DataRequired()])
+    submit = SubmitField('Create account')
+    
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
@@ -40,7 +45,9 @@ class TransactionForm(FlaskForm):
     ammount_to_transfer = IntegerField('Ammount', validators=[DataRequired()])
     sending = QuerySelectField('Account',validators=[DataRequired()], query_factory=Transaction.getAccounts)
     submit = SubmitField('Send')
-    
+
+
+
 #class TransactionForm(FlaskForm):
 #    receiver = IntegerField('Receiver', validators=[DataRequired()])
 #    ammount_to_transfer = IntegerField('Ammount', validators=[DataRequired()])
