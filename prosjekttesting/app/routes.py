@@ -17,7 +17,7 @@ import pyotp
 @limiter.limit("5/minute")
 def login():
     if current_user.is_authenticated:
-        return redirect('index')
+        return redirect('index/<username>')
     form = LoginForm()
     if form.validate_on_submit():
         u = escape(str(form.username.data))
@@ -34,14 +34,16 @@ def login():
 
 code = ''
 @app.route('/contact', methods=['GET', 'POST'])
+@limiter.limit("200/day")
+@limiter.limit("30/hour")
+@limiter.limit("5/minute")
 def epostverifisering():
     global code
     form = EmailVerifForm()
     if current_user.is_authenticated:
-        #code = str(''.join(random.choice(string.ascii_letters) for _ in range(10)))
-       #codo = str(code)
         if request.method=='GET':
-            code = str(pyotp.random_base32())
+            k = pyotp.HOTP('base32secret3232')
+            code = k.at(random.SystemRandom().randint(0, 1000000))
             msg = Message("Feedback", recipients=[current_user.email])
             msg.body = "Code:{}\n Use this code to authenticate the user".format(code)
             mail.send(msg)
@@ -50,7 +52,7 @@ def epostverifisering():
                 u = escape(str(form.code.data))
                 if u == code:
                     print('You entered the correct code, you will be transfered shortly')
-                    return redirect('index')
+                    return redirect('index/<username>')
                 else:
 
                     return redirect('contact')
@@ -61,14 +63,14 @@ def epostverifisering():
 @app.route('/logout')
 def logout():
     logout_user()
-    return redirect('index')
+    return redirect('login')
 
     
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        return redirect('index')
+        return redirect('index/<username>')
     form = RegistrationForm()
     if form.validate_on_submit():
         u = escape(str(form.username.data))
@@ -84,21 +86,18 @@ def register():
     
 
 @app.route('/')
-@app.route('/index', methods=['GET', 'POST']) #index<username>
+@app.route('/index/<username>', methods=['GET', 'POST']) #index<username>
 @login_required
-def index():                  #index(username)
+def index(username=current_user):                  #index(username)
     if current_user.is_authenticated:
         form = TransactionForm()
     
-<<<<<<< HEAD
-    #if current_user.username is not index.username:
-    #    return redirect('index<username>')
-    if current_user.is_active is False:
-        return redirect('login')
-=======
+    if current_user.username is not index.username:
+        return redirect('index/<username>')
+    #if current_user.is_active is False:
+    #    return redirect('login')
     #if current_user.username is not Account.owner_name:
      #   return redirect('index')
->>>>>>> 680fbb83ffb79da419495b590c58a213a4871f3e
     if form.validate_on_submit():
         r = escape(int(form.receiver.data))
         a = escape(int(form.ammount_to_transfer.data))
@@ -110,7 +109,7 @@ def index():                  #index(username)
         return redirect('index')
 
         
-    return render_template('index.html', title='Home', form=form)
+    return render_template('index.html', title='Home', form=form, username=username)
 
 @app.route('/newaccount', methods=['GET', 'POST'])
 @login_required

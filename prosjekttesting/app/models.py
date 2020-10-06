@@ -28,10 +28,7 @@ class User(UserMixin, db.Model):
 class Account(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64),index=True,unique=True)
-<<<<<<< HEAD
     #owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-=======
->>>>>>> 680fbb83ffb79da419495b590c58a213a4871f3e
     owner_name = db.Column(db.String(64), db.ForeignKey('user.username'))
     balance = db.Column(db.String(128))
     transactions = db.relationship('Transaction', backref='acc')
