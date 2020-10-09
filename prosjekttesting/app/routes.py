@@ -41,6 +41,7 @@ code = ''
 def epostverifisering():
     global code
     global verified
+    verified = False
     form = EmailVerifForm()
     if current_user.is_authenticated:
         if request.method=='GET':
@@ -123,18 +124,20 @@ def mypage(username):
     return render_template('mypage.html', title='My Page', form=form, username=current_user.username)
 
 @app.route('/')
-@app.route('/index', methods=['GET', 'POST']) #index<username>
+@app.route('/index', methods=['GET', 'POST']) 
 def index():
 
 
 
     return render_template('index.html', title='Welcome to Skvipps')
 
-@app.route('/newaccount', methods=['GET', 'POST'])
+@app.route('/newaccount/<username>', methods=['GET', 'POST'])
 @login_required
-def newaccount():
+def newaccount(username):
     if verified == False:
         return redirect('/contact')
+    if current_user.username != username:
+        return redirect(url_for('mypage', username=current_user.username))  
     if current_user.is_authenticated:
         form = NewaccForm()
     else:
