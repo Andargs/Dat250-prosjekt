@@ -24,6 +24,7 @@
             {% else %}
             <a href="{{ url_for('logout') }}">Logout</a>
             <a href="{{ url_for('newaccount') }}">New account</a>
+            <a href="{{ url_for('mypage', username=current_user.username) }}">My Page</a>
             {% endif %}
             
         </div>

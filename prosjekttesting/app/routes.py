@@ -1,6 +1,6 @@
 
 from app import app, db, mail, limiter
-from flask import render_template, flash, redirect
+from flask import render_template, flash, redirect, url_for
 from app.forms import LoginForm, RegistrationForm, EmailVerifForm, TransactionForm, NewaccForm
 from app.models import User, Transaction, Account
 from flask_login import current_user, login_user, login_required, logout_user
@@ -12,9 +12,9 @@ import pyotp
 
 
 @app.route('/login', methods=['GET', 'POST'])
-@limiter.limit("200/day")
-@limiter.limit("30/hour")
-@limiter.limit("5/minute")
+#@limiter.limit("200/day")
+#@limiter.limit("30/hour")
+#@limiter.limit("5/minute")
 def login():
     if current_user.is_authenticated:
         return redirect('index/<username>')
@@ -32,36 +32,41 @@ def login():
     return render_template('login.html', title='Sign In', form=form)
     #return render_template('contact.html')
 
+verified = False
 code = ''
 @app.route('/contact', methods=['GET', 'POST'])
-@limiter.limit("200/day")
-@limiter.limit("30/hour")
-@limiter.limit("5/minute")
+#@limiter.limit("200/day")
+#@limiter.limit("30/hour")
+#@limiter.limit("5/minute")
 def epostverifisering():
     global code
+    global verified
     form = EmailVerifForm()
     if current_user.is_authenticated:
         if request.method=='GET':
             k = pyotp.HOTP('base32secret3232')
             code = k.at(random.SystemRandom().randint(0, 1000000))
             msg = Message("Feedback", recipients=[current_user.email])
-            msg.body = "Code:{}\n Use this code to authenticate the user".format(code)
+            msg.body = "Code:{}\n Use this code to authenticate the user, any other email you may recive from this email is not accociated with skvipps".format(code)
             mail.send(msg)
         else:
             if form.validate_on_submit():
                 u = escape(str(form.code.data))
                 if u == code:
+                    verified = True
                     print('You entered the correct code, you will be transfered shortly')
-                    return redirect('index/<username>')
+                    return redirect('mypage/<username>')
                 else:
-
                     return redirect('contact')
+    else:
+        return redirect('login')
     return render_template('contact.html', title='emailverifisering', form=form)
 
 
 
 @app.route('/logout')
 def logout():
+    verified = False
     logout_user()
     return redirect('login')
 
@@ -70,7 +75,7 @@ def logout():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        return redirect('index/<username>')
+        return redirect('mypage/<username>')
     form = RegistrationForm()
     if form.validate_on_submit():
         u = escape(str(form.username.data))
@@ -85,16 +90,20 @@ def register():
     return render_template('register.html', title='Register', form=form)
     
 
-@app.route('/')
-@app.route('/index/<username>', methods=['GET', 'POST']) #index<username>
+
+@app.route('/mypage/<username>', methods=['GET', 'POST']) #index<username>
 @login_required
-def index(username=current_user):                  #index(username)
+def mypage(username):
+    if verified == False:
+        return redirect('/contact')
+    if current_user.username != username:
+        return redirect(url_for('mypage', username=current_user.username))               #index(username)
     if current_user.is_authenticated:
         form = TransactionForm()
     
-    if current_user.username is not index.username:
-        return redirect('index/<username>')
-    #if current_user.is_active is False:
+    #if current_user.username is not index.username:
+      #  return redirect(url_for('/mypage', username=current_user.username))
+    ##if current_user.is_active is False:
     #    return redirect('login')
     #if current_user.username is not Account.owner_name:
      #   return redirect('index')
@@ -106,14 +115,26 @@ def index(username=current_user):                  #index(username)
         Transaction.transaction(a,r,s)
         db.session.add(transaction)
         db.session.commit()
-        return redirect('index')
+        return redirect('mypage', username=current_user.username)
+
+
 
         
-    return render_template('index.html', title='Home', form=form, username=username)
+    return render_template('mypage.html', title='My Page', form=form, username=current_user.username)
+
+@app.route('/')
+@app.route('/index', methods=['GET', 'POST']) #index<username>
+def index():
+
+
+
+    return render_template('index.html', title='Welcome to Skvipps')
 
 @app.route('/newaccount', methods=['GET', 'POST'])
 @login_required
 def newaccount():
+    if verified == False:
+        return redirect('/contact')
     if current_user.is_authenticated:
         form = NewaccForm()
     else:
