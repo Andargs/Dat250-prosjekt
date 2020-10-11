@@ -126,6 +126,9 @@ def mypage(username):
 @app.route('/')
 @app.route('/index', methods=['GET', 'POST']) 
 def index():
+    if current_user is None:
+        logout()
+        return redirect('/index')
 
 
 
