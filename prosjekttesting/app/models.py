@@ -61,20 +61,36 @@ class User(UserMixin, db.Model):
 class Account(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64),index=True,unique=True)
-    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    #owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    owner_name = db.Column(db.String(64), db.ForeignKey('user.username'))
     balance = db.Column(db.String(128))
-    transactions = db.relationship('Transaction', backref='account')
+    transactions = db.relationship('Transaction', backref='acc')
+
+    def __str__(self):
+        return self.name
+
 
 class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    ammount = db.Column(db.String(140))
+    ammount_in_transac = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    receiving = db.Column(db.Integer, db.ForeignKey('account.id'))
-    sender = db.Column(db.Integer)
+    receiving = db.Column(db.Integer)
+    sender = db.Column(db.Integer, db.ForeignKey('account.id'))
     
 
     def __repr__(self):
-        return '{}:{} overførte {},- til {}>'.format(self.timestamp, self.sender, self.ammount, self.receiving)
+        return '{}:{} overførte {},- til {}>'.format(self.timestamp, self.sender, self.ammount_in_transac, self.receiving)
+    
+    def transaction(self, ammount, receiver, sender):
+        self.balance -= ammount
+        receiver.balance += ammount
+        print('{}:{} overførte {},- til {}>'.format(self.timestamp, self.sender, self.ammount_in_transac, self.receiving))
+    
+    def getAccounts():
+        return Account.query
+        
+
+
     
 
 #class transak(db.Model):

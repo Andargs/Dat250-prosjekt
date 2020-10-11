@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Hi, {{ current_user.username }}!</h1>
-    {% for transaksasjon in transaksasjoner %}
-    <div><p>{{ transaksasjon.author.username }} says: <b>{{ transaksasjon.body }}</b></p></div>
-    {% endfor %}
+    <h1>Welcome to Skvipps</h1>
+    
 {% endblock %}

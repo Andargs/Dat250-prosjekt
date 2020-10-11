@@ -17,13 +17,16 @@
 
     <body>
         <div>
-            <a href="{{ url_for('index') }}">Home</a>
             {% if current_user.is_anonymous %}
+            <a href="{{ url_for('index') }}">Home</a>
             <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('register') }}">Register</a>
             {% else %}
             <a href="{{ url_for('logout') }}">Logout</a>
+            <a href="{{ url_for('newaccount', username=current_user.username) }}">New account</a>
+            <a href="{{ url_for('mypage', username=current_user.username) }}">My Page</a>
             {% endif %}
-            <a href="{{ url_for('register') }}">Register</a>
+            
         </div>
         <hr>
         {% with messages = get_flashed_messages() %}
