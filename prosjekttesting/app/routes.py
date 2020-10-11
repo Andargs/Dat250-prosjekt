@@ -55,7 +55,6 @@ def epostverifisering():
                 u = escape(str(form.code.data))
                 if u == code:
                     verified = True
-                    print('You entered the correct code, you will be transfered shortly')
                     return redirect('mypage/<username>')
                 else:
                     return redirect('contact')
@@ -95,6 +94,8 @@ def register():
 @app.route('/mypage/<username>', methods=['GET', 'POST']) #index<username>
 @login_required
 def mypage(username):
+    if current_user is None:
+        return redirect('/login')
     if verified == False:
         return redirect('/contact')
     if current_user.username != username:
@@ -137,6 +138,8 @@ def index():
 @app.route('/newaccount/<username>', methods=['GET', 'POST'])
 @login_required
 def newaccount(username):
+    if current_user is None:
+        return redirect('/login')
     if verified == False:
         return redirect('/contact')
     if current_user.username != username:
