@@ -6,6 +6,27 @@ from flask_login import LoginManager
 from flask_mail import Mail, Message
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+import logging
+from logging.config import dictConfig
+from logging.handlers import SMTPHandler
+
+
+dictConfig({
+    'version': 1,
+    'formatters': {'default': {
+        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+    }},
+    'handlers': {'wsgi': {
+        'class': 'logging.StreamHandler',
+        'stream': 'ext://flask.logging.wsgi_errors_stream',
+        'formatter': 'default'
+    }},
+    'root': {
+        'level': 'INFO',
+        'handlers': ['wsgi']
+    }
+})
+
 
 
 app = Flask(__name__)
@@ -31,5 +52,20 @@ limiter = Limiter(
     app,
     key_func=get_remote_address,
     default_limits=["200 per day", "30 per hour"])
+
+mail_handler = SMTPHandler(
+    mailhost='127.0.0.1',
+    fromaddr='skvipps@gmail.com',
+    toaddrs=['skvipps@gmail.com'],
+    subject='Application Error'
+)
+mail_handler.setLevel(logging.ERROR)
+mail_handler.setFormatter(logging.Formatter(
+    '[%(asctime)s] %(levelname)s in %(module)s: %(message)s'
+))
+
+if not app.debug:
+    app.logger.addHandler(mail_handler)
+
 
 from app import routes, models

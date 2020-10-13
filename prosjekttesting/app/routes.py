@@ -1,5 +1,5 @@
 
-from app import app, db, mail, limiter
+from app import app, db, mail, limiter, mail_handler
 from flask import render_template, flash, redirect, url_for
 from app.forms import LoginForm, RegistrationForm, EmailVerifForm, TransactionForm, NewaccForm
 from app.models import User, Transaction, Account
@@ -8,7 +8,7 @@ from flask import escape, request
 import random,string
 from flask_mail import Mail, Message
 import pyotp
-
+import logging
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -25,6 +25,7 @@ def login():
         user = User.query.filter_by(username=u).first()
         if user is None or not user.check_password(p):
             flash('Invalid username or password')
+            app.logger.info(f'{user} failed to log in')
             return redirect('login')
         login_user(user, remember=form.remember_me.data)
         #return redirect('index')
@@ -57,6 +58,7 @@ def epostverifisering():
                     verified = True
                     return redirect('mypage/<username>')
                 else:
+                    app.logger.info(f'{user} failed email verification')
                     return redirect('contact')
     else:
         return redirect('login')
@@ -95,10 +97,13 @@ def register():
 @login_required
 def mypage(username):
     if current_user is None:
+        app.logger.info(f'Someone tried to bypass login')
         return redirect('/login')
     if verified == False:
+        app.logger.info(f'{username} tried to bypass email verification')
         return redirect('/contact')
     if current_user.username != username:
+        app.logger.info(f'{current_user} tried to access {username} account')
         return redirect(url_for('mypage', username=current_user.username))               #index(username)
     if current_user.is_authenticated:
         form = TransactionForm()
@@ -117,6 +122,12 @@ def mypage(username):
         Transaction.transaction(a,r,s)
         db.session.add(transaction)
         db.session.commit()
+        if type(r) != int:
+            app.logger.info(f'{username} failed to transfer money. Plausible injection attempt')
+        if type(a) != int:
+            app.logger.info(f'{username} failed to transfer money. Plausible injection attempt')
+        if type(s) != int:
+            app.logger.info(f'{username} failed to transfer money. Plausible injection attempt')
         return redirect('mypage', username=current_user.username)
 
 
@@ -139,10 +150,13 @@ def index():
 @login_required
 def newaccount(username):
     if current_user is None:
+        app.logger.info(f'someone tried to bypass login')
         return redirect('/login')
     if verified == False:
+        app.logger.info(f'{username} tried to bypass email verification')
         return redirect('/contact')
     if current_user.username != username:
+        app.logger.info(f'{current_user} tried to access {username}s acount')
         return redirect(url_for('mypage', username=current_user.username))  
     if current_user.is_authenticated:
         form = NewaccForm()
@@ -155,6 +169,10 @@ def newaccount(username):
         account = Account(name=a, balance=b, owner_name=current_user.username)
         db.session.add(account)
         db.session.commit()
+        if type(a) != str:
+            app.logger.info(f'{username} failed to create new account, plausible injection attempt')
+        if type(b) != int:
+            app.logger.info(f'{username} failed to create new account, plausible injection attempt')
         return redirect('index')
 
         
