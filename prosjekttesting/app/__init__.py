@@ -9,6 +9,9 @@ from flask_limiter.util import get_remote_address
 import logging
 from logging.config import dictConfig
 from logging.handlers import SMTPHandler
+from flask_wtf import CSRFProtect
+
+csrf = CSRFProtect()
 
 
 dictConfig({
@@ -37,6 +40,7 @@ app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = 'skvipps@gmail.com'
 app.config['MAIL_DEFAULT_SENDER'] = 'skvipps@gmail.com'
 app.config['MAIL_PASSWORD'] = 'Dromedarkrom'
+csrf.init_app(app)
 
 
 

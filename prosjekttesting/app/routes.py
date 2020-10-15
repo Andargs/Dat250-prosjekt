@@ -115,11 +115,11 @@ def mypage(username):
     #if current_user.username is not Account.owner_name:
      #   return redirect('index')
     if form.validate_on_submit():
-        r = escape(int(form.recieving.data))
-        a = escape(int(form.ammount_to_transfer.data))
+        r = escape(str(form.recieving.data))
+        a = int(form.ammount_to_transfer.data)
         s = current_user.id
         sender = User.query.filter_by(id=s).first()
-        reciever = User.query.filter_by(id=r).first()
+        reciever = User.query.filter_by(username=r).first()
         transaction = Transaction(ammount=a, recieving=r,sender=s)
         if sender.update_balance(a):
             db.session.add(transaction)
@@ -134,7 +134,7 @@ def mypage(username):
             app.logger.info(f'{username} failed to transfer money. Plausible injection attempt')
         if type(s) != int:
             app.logger.info(f'{username} failed to transfer money. Plausible injection attempt')
-        return redirect('mypage', user=current_user)
+        return redirect(url_for('mypage', username=current_user.username)) 
 
 
 
