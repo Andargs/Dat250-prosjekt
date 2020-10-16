@@ -1,7 +1,7 @@
 <html>
     <center>
     <head>
-        <img src="../static/images/logo.png" alt="Logo" widt="150" height="150"> 
+        <img src="{{ url_for('static', filename='/images/logo.png' ) }}", height="150">
         {% if title %}
         <title>{{ title }} - Svkipps</title>
         {% else %}
