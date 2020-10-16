@@ -10,6 +10,7 @@ import logging
 from logging.config import dictConfig
 from logging.handlers import SMTPHandler
 from flask_wtf import CSRFProtect
+from flask_talisman import Talisman
 
 csrf = CSRFProtect()
 
@@ -33,6 +34,13 @@ dictConfig({
 
 
 app = Flask(__name__)
+Talisman(app)
+csp = {
+    'default-src': '\'self\'',
+    'img-src': '*'
+}
+talisman = Talisman(app, content_security_policy=csp)
+
 app.config.from_object(Config)
 app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
 app.config['MAIL_PORT'] = 587

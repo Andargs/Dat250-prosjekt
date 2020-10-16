@@ -1,5 +1,5 @@
 
-from app import app, db, mail, limiter, mail_handler
+from app import app, db, mail, limiter, mail_handler, talisman
 from flask import render_template, flash, redirect, url_for
 from app.forms import LoginForm, RegistrationForm, EmailVerifForm, TransactionForm
 from flask_login import current_user, login_user, login_required, logout_user
@@ -15,6 +15,7 @@ from app.models import User, Transaction
 #@limiter.limit("200/day")
 #@limiter.limit("30/hour")
 #@limiter.limit("5/minute")
+@talisman()
 def login():
     if current_user.is_authenticated:
         return redirect('index/<username>')
@@ -39,6 +40,7 @@ code = ''
 #@limiter.limit("200/day")
 #@limiter.limit("30/hour")
 #@limiter.limit("5/minute")
+@talisman()
 def epostverifisering():
     global code
     global verified
@@ -67,6 +69,7 @@ def epostverifisering():
 
 
 @app.route('/logout')
+@talisman()
 def logout():
     verified = False
     logout_user()
@@ -75,6 +78,7 @@ def logout():
     
 
 @app.route('/register', methods=['GET', 'POST'])
+@talisman()
 def register():
     if current_user.is_authenticated:
         return redirect('login')
@@ -95,6 +99,7 @@ def register():
 
 @app.route('/mypage/<username>', methods=['GET', 'POST']) #index<username>
 @login_required
+@talisman()
 def mypage(username):
     if current_user is None:
         app.logger.info(f'Someone tried to bypass login')
@@ -143,6 +148,7 @@ def mypage(username):
 
 @app.route('/')
 @app.route('/index', methods=['GET', 'POST']) 
+@talisman()
 def index():
     if current_user is None:
         logout()
