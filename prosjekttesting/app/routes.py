@@ -1,20 +1,21 @@
 
-from app import app, db, mail, limiter
+from app import app, db, mail, limiter, mail_handler, talisman
 from flask import render_template, flash, redirect, url_for
-from app.forms import LoginForm, RegistrationForm, EmailVerifForm, TransactionForm, NewaccForm
-from app.models import User, Transaction, Account
+from app.forms import LoginForm, RegistrationForm, EmailVerifForm, TransactionForm
 from flask_login import current_user, login_user, login_required, logout_user
 from flask import escape, request
 import random,string
 from flask_mail import Mail, Message
 import pyotp
-
+import logging
+from app.models import User, Transaction
 
 
 @app.route('/login', methods=['GET', 'POST'])
 #@limiter.limit("200/day")
 #@limiter.limit("30/hour")
 #@limiter.limit("5/minute")
+@talisman()
 def login():
     if current_user.is_authenticated:
         return redirect('index/<username>')
@@ -25,19 +26,21 @@ def login():
         user = User.query.filter_by(username=u).first()
         if user is None or not user.check_password(p):
             flash('Invalid username or password')
+            app.logger.info(f'{user} failed to log in')
             return redirect('login')
         login_user(user, remember=form.remember_me.data)
         #return redirect('index')
-        return redirect('contact')
+        return redirect('verification')
     return render_template('login.html', title='Sign In', form=form)
     #return render_template('contact.html')
 
 verified = False
 code = ''
-@app.route('/contact', methods=['GET', 'POST'])
+@app.route('/verification', methods=['GET', 'POST'])
 #@limiter.limit("200/day")
 #@limiter.limit("30/hour")
 #@limiter.limit("5/minute")
+@talisman()
 def epostverifisering():
     global code
     global verified
@@ -57,7 +60,8 @@ def epostverifisering():
                     verified = True
                     return redirect('mypage/<username>')
                 else:
-                    return redirect('contact')
+                    app.logger.info(f'{current_user.username} failed email verification')
+                    return redirect('verification')
     else:
         return redirect('login')
     return render_template('contact.html', title='emailverifisering', form=form)
@@ -65,6 +69,7 @@ def epostverifisering():
 
 
 @app.route('/logout')
+@talisman()
 def logout():
     verified = False
     logout_user()
@@ -73,9 +78,10 @@ def logout():
     
 
 @app.route('/register', methods=['GET', 'POST'])
+@talisman()
 def register():
     if current_user.is_authenticated:
-        return redirect('mypage/<username>')
+        return redirect('login')
     form = RegistrationForm()
     if form.validate_on_submit():
         u = escape(str(form.username.data))
@@ -93,12 +99,16 @@ def register():
 
 @app.route('/mypage/<username>', methods=['GET', 'POST']) #index<username>
 @login_required
+@talisman()
 def mypage(username):
     if current_user is None:
+        app.logger.info(f'Someone tried to bypass login')
         return redirect('/login')
     if verified == False:
-        return redirect('/contact')
+        app.logger.info(f'{username} tried to bypass email verification')
+        return redirect('/verification')
     if current_user.username != username:
+        app.logger.info(f'{current_user} tried to access {username} account')
         return redirect(url_for('mypage', username=current_user.username))               #index(username)
     if current_user.is_authenticated:
         form = TransactionForm()
@@ -110,22 +120,35 @@ def mypage(username):
     #if current_user.username is not Account.owner_name:
      #   return redirect('index')
     if form.validate_on_submit():
-        r = escape(int(form.receiver.data))
-        a = escape(int(form.ammount_to_transfer.data))
-        s = escape(int(form.sending.data))
-        transaction = Transaction(ammount=a, receiver=r,sender=s)
-        Transaction.transaction(a,r,s)
-        db.session.add(transaction)
-        db.session.commit()
-        return redirect('mypage', username=current_user.username)
+        r = escape(str(form.recieving.data))
+        a = int(form.ammount_to_transfer.data)
+        s = current_user.id
+        sender = User.query.filter_by(id=s).first()
+        reciever = User.query.filter_by(username=r).first()
+        transaction = Transaction(ammount=a, recieving=r,sender=s)
+        if sender.update_balance(a):
+            db.session.add(transaction)
+            reciever.update_balance(-a)
+            db.session.commit()
+            app.logger.info(f'{username} transfered {a},- to {reciever.username}')
+        else:
+            flash("You don't have that amount of money!")
+        if type(r) != int:
+            app.logger.info(f'{username} failed to transfer money. Plausible injection attempt')
+        if type(a) != int:
+            app.logger.info(f'{username} failed to transfer money. Plausible injection attempt')
+        if type(s) != int:
+            app.logger.info(f'{username} failed to transfer money. Plausible injection attempt')
+        return redirect(url_for('mypage', username=current_user.username)) 
 
 
 
         
-    return render_template('mypage.html', title='My Page', form=form, username=current_user.username)
+    return render_template('mypage.html', title='My Page', form=form, user=current_user)
 
 @app.route('/')
 @app.route('/index', methods=['GET', 'POST']) 
+@talisman()
 def index():
     if current_user is None:
         logout()
@@ -135,29 +158,5 @@ def index():
 
     return render_template('index.html', title='Welcome to Skvipps')
 
-@app.route('/newaccount/<username>', methods=['GET', 'POST'])
-@login_required
-def newaccount(username):
-    if current_user is None:
-        return redirect('/login')
-    if verified == False:
-        return redirect('/contact')
-    if current_user.username != username:
-        return redirect(url_for('mypage', username=current_user.username))  
-    if current_user.is_authenticated:
-        form = NewaccForm()
-    else:
-        return redirect('index')
-    
-    if form.validate_on_submit():
-        a = escape(str(form.accountname.data))
-        b = escape(int(form.balance.data))
-        account = Account(name=a, balance=b, owner_name=current_user.username)
-        db.session.add(account)
-        db.session.commit()
-        return redirect('index')
-
-        
-    return render_template('newaccount.html', title='New Account', form=form)
 
 

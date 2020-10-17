@@ -1,7 +1,7 @@
 <html>
     <center>
     <head>
-        <img src="https://i.gyazo.com/7d3bd7efad9d08165a6cb601b130ad1f.png" alt="skrump" widt="150" height="150"> 
+        <img src="{{ url_for('static', filename='/images/logo.png' ) }}", height="150">
         {% if title %}
         <title>{{ title }} - Svkipps</title>
         {% else %}
@@ -23,7 +23,7 @@
             <a href="{{ url_for('register') }}">Register</a>
             {% else %}
             <a href="{{ url_for('logout') }}">Logout</a>
-            <a href="{{ url_for('newaccount', username=current_user.username) }}">New account</a>
+            <a href="{{ url_for('logout', username=current_user.username) }}">New account</a>
             <a href="{{ url_for('mypage', username=current_user.username) }}">My Page</a>
             {% endif %}
             
