@@ -1,4 +1,4 @@
-alembic==1.4.3
+
 blinker==1.4
 certifi==2020.6.20
 chardet==3.0.4
@@ -38,3 +38,4 @@ web.py==0.61
 Werkzeug==1.0.1
 WTForms==2.3.3
 WTForms-SQLAlchemy==0.2
+alembic==1.4.3
