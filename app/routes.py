@@ -1,5 +1,5 @@
 
-from app import app, db, mail, limiter, mail_handler, talisman
+from app import app, db, mail, limiter, mail_handler, talisman, csrf
 from flask import render_template, flash, redirect, url_for
 from app.forms import LoginForm, RegistrationForm, EmailVerifForm, TransactionForm
 from flask_login import current_user, login_user, login_required, logout_user
