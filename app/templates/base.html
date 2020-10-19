@@ -1,0 +1,43 @@
+<html>
+    <center>
+    <head>
+        <img src="{{ url_for('static', filename='/images/logo.png' ) }}", height="150">
+        {% if title %}
+        <title>{{ title }} - Svkipps</title>
+        {% else %}
+        <title>Skvipps</title>
+        {% endif %}
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link rel="stylesheet" href="{{ url_for('static', filename='/css/main.css') }}">
+        {% block head %}{% endblock %}
+    </head>
+
+
+    <body>
+        <div>
+            {% if current_user.is_anonymous %}
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('register') }}">Register</a>
+            {% else %}
+            <a href="{{ url_for('logout') }}">Logout</a>
+            <a href="{{ url_for('mypage', username=current_user.username) }}">My Page</a>
+            {% endif %}
+            
+        </div>
+        <hr>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </body>
+    </center>
+</html>
