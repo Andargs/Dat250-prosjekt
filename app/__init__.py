@@ -13,6 +13,9 @@ from flask_wtf import CSRFProtect
 from flask_talisman import Talisman
 #from flask_seasurf import SeaSurf
 
+
+
+
 csrf = CSRFProtect()
 
 dictConfig({
@@ -57,6 +60,7 @@ csrf.init_app(app)
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'

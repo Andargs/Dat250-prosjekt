@@ -5,6 +5,12 @@ from Cryptodome.Protocol.KDF import scrypt
 from Cryptodome.Random import get_random_bytes
 import base64
 
+from sqlalchemy_utils import EncryptedType
+from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine
+
+
+
+secret_key = 'secretkey1234' 
 
 
 
@@ -14,19 +20,17 @@ def load_user(id):
 
 
 class User(UserMixin, db.Model):
+    __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), index=True, unique=True)
-    email = db.Column(db.String(120), index=True, unique=True)
+    username = db.Column(EncryptedType(db.String, secret_key, AesEngine, 'pkcs5'), index=True, unique=True)
+    email = db.Column(EncryptedType(db.String, secret_key, AesEngine, 'pkcs5'), index=True, unique=True)
     password_hash = db.Column(db.String(128))
-<<<<<<< HEAD
-    
-=======
-    balance = db.Column(db.Integer, default=100)
+    balance = db.Column(EncryptedType(db.Integer, secret_key, AesEngine, 'pkcs5'), default=100)
     #salt = db.Column(db.Integer)
->>>>>>> 1862343bf49493f33236f02811d34dc003350ada
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
+
 
     def set_password(self, password):
         salt = get_random_bytes(8)
@@ -53,6 +57,7 @@ class User(UserMixin, db.Model):
             return True
         else:
             return False
+    
     def get_balance(self):
         return '<Balance: {}'.format(self.balance)
     
@@ -73,4 +78,7 @@ class Transaction(db.Model):
 
     def __repr__(self):
         return '{}:{} overførte {},- til {}>'.format(self.timestamp, self.sender, self.ammount_in_transac, self.receiving)
-    
+
+
+if __name__ == '__main__':
+    db.create_all()
