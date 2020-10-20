@@ -1,7 +1,7 @@
 
 from app import app, db, mail, limiter, mail_handler, talisman, csrf
 from flask import render_template, flash, redirect, url_for
-from app.forms import LoginForm, RegistrationForm, EmailVerifForm, TransactionForm, ResetPasswordRequestForm
+from app.forms import LoginForm, RegistrationForm, EmailVerifForm, TransactionForm, ResetPasswordRequestForm, ResetPasswordForm
 from flask_login import current_user, login_user, login_required, logout_user
 from flask import escape, request
 import random,string
@@ -61,7 +61,8 @@ def reset_password_request():
             send_password_reset_email(user)
         flash('Check your email for the instructions to reset your password')
         return redirect(url_for('login'))
-    return render_template('reset_password_request.html', title='Reset Password', form=form)
+    return render_template('reset_password_request.html',
+                           title='Reset Password', form=form)
 
 @app.route('/verification', methods=['GET', 'POST'])
 #@limiter.limit("200/day")

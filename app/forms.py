@@ -39,7 +39,7 @@ class ResetPasswordForm(FlaskForm):
     password2 = PasswordField(
         'Repeat Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Request Password Reset')
-
+    
 class TransactionForm(FlaskForm):
     recieving = StringField('Receiver', validators=[DataRequired()])
     ammount_to_transfer = IntegerField('Ammount', validators=[DataRequired()])
