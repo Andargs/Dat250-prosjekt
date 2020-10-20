@@ -1,7 +1,7 @@
 
 from app import app, db, mail, limiter, mail_handler, talisman, csrf
 from flask import render_template, flash, redirect, url_for
-from app.forms import LoginForm, RegistrationForm, EmailVerifForm, TransactionForm
+from app.forms import LoginForm, RegistrationForm, EmailVerifForm, TransactionForm, ResetPasswordRequestForm
 from flask_login import current_user, login_user, login_required, logout_user
 from flask import escape, request
 import random,string
@@ -9,6 +9,7 @@ from flask_mail import Mail, Message
 import pyotp
 import logging
 from app.models import User, Transaction
+from app.email import send_password_reset_email
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -34,8 +35,34 @@ def login():
     return render_template('login.html', title='Sign In', form=form)
     #return render_template('contact.html')
 
-verified = False
-code = ''
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    user = User.verify_reset_password_token(token)
+    if not user:
+        return redirect(url_for('index'))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        user.set_password(form.password.data)
+        db.session.commit()
+        flash('Your password has been reset.')
+        return redirect(url_for('login'))
+    return render_template('reset_password.html', form=form)
+
+@app.route('/reset_password_request', methods=['GET', 'POST'])
+def reset_password_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = ResetPasswordRequestForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            send_password_reset_email(user)
+        flash('Check your email for the instructions to reset your password')
+        return redirect(url_for('login'))
+    return render_template('reset_password_request.html', title='Reset Password', form=form)
+
 @app.route('/verification', methods=['GET', 'POST'])
 #@limiter.limit("200/day")
 #@limiter.limit("30/hour")

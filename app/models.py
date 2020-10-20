@@ -1,9 +1,12 @@
 from datetime import datetime
-from app import db, login_manager
+from time import time
+from app import app, db, login_manager
 from flask_login import UserMixin
 from Cryptodome.Protocol.KDF import scrypt
 from Cryptodome.Random import get_random_bytes
 import base64
+import jwt
+
 
 from sqlalchemy_utils import EncryptedType
 from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine
@@ -57,7 +60,25 @@ class User(UserMixin, db.Model):
             return True
         else:
             return False
+<<<<<<< HEAD
     
+=======
+
+    def get_reset_password_token(self, expires_in=600):
+        return jwt.encode(
+            {'reset_password': self.id, 'exp': time() + expires_in},
+            app.config['SECRET_KEY'], algorithm='HS256').decode('utf-8')
+
+    @staticmethod
+    def verify_reset_password_token(token):
+        try:
+            id = jwt.decode(token, app.config['SECRET_KEY'],
+                            algorithms=['HS256'])['reset_password']
+        except:
+            return
+        return User.query.get(id)
+
+>>>>>>> 366a7d3aac6976b442d414c586c9101b93fb6fc1
     def get_balance(self):
         return '<Balance: {}'.format(self.balance)
     
