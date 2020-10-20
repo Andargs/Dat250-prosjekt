@@ -1,1 +1,1 @@
-python3 datb.py
+web: flask db upgrade; gunicorn app:app
