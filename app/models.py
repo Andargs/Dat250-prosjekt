@@ -60,9 +60,7 @@ class User(UserMixin, db.Model):
             return True
         else:
             return False
-<<<<<<< HEAD
-    
-=======
+
 
     def get_reset_password_token(self, expires_in=600):
         return jwt.encode(
@@ -78,7 +76,6 @@ class User(UserMixin, db.Model):
             return
         return User.query.get(id)
 
->>>>>>> 366a7d3aac6976b442d414c586c9101b93fb6fc1
     def get_balance(self):
         return '<Balance: {}'.format(self.balance)
     
