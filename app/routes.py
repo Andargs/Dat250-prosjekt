@@ -1,5 +1,5 @@
 
-from app import app, db, mail, limiter, mail_handler, talisman, csrf
+from app import app, db, mail, limiter, mail_handler, talisman, csrf, login_manager
 from flask import render_template, flash, redirect, url_for
 from app.forms import LoginForm, RegistrationForm, EmailVerifForm, TransactionForm, ResetPasswordRequestForm, ResetPasswordForm
 from flask_login import current_user, login_user, login_required, logout_user
@@ -10,6 +10,7 @@ import pyotp
 import logging
 from app.models import User, Transaction
 from app.email import send_password_reset_email
+from datetime import timedelta
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -188,3 +189,6 @@ def index():
 
 
 
+@app.before_request
+def before_request():
+    app.permanent_session_lifetime = timedelta(minutes=3)

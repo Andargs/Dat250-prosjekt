@@ -11,6 +11,7 @@ from logging.config import dictConfig
 from logging.handlers import SMTPHandler
 from flask_wtf import CSRFProtect
 from flask_talisman import Talisman
+from datetime import timedelta
 #from flask_seasurf import SeaSurf
 
 
@@ -64,6 +65,9 @@ migrate = Migrate(app, db)
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
+login_manager.refresh_view = 'relogin'
+login_manager.needs_refresh_message = (u"Session timedout, please re-login")
+login_manager.needs_refresh_message_category = "info"
 mail = Mail(app)
 mail.init_app(app)
 limiter = Limiter(
