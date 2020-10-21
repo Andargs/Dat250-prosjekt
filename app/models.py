@@ -8,12 +8,13 @@ import base64
 import jwt
 
 
+
 from sqlalchemy_utils import EncryptedType
 from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine
 
 
 
-secret_key = 'secretkey1234' 
+secret_key = '\x9f\xd5\xfef\x98\xf14_M\x99$\x11=T\xccgx\xf5\xd5\xc0\xc2\xf9\xdc\x1d' 
 
 
 
@@ -39,7 +40,8 @@ class User(UserMixin, db.Model):
         salt = get_random_bytes(8)
         hash = scrypt(password, salt, 32, 16384, 8, 1)
         basehash = base64.b64encode(hash)
-        basehashstring = basehash.decode('utf-8')
+        bas
+        ehashstring = basehash.decode('utf-8')
         basesalt = base64.b64encode(salt)
         basesaltstring = basesalt.decode('utf-8')
         hashString = "{0};{1};{2};{3};{4}".format(basesaltstring, 16384, 8, 1, basehashstring)
