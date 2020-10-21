@@ -59,6 +59,7 @@ csrf.init_app(app)
 
 
 
+
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
