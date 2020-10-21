@@ -40,8 +40,7 @@ class User(UserMixin, db.Model):
         salt = get_random_bytes(8)
         hash = scrypt(password, salt, 32, 16384, 8, 1)
         basehash = base64.b64encode(hash)
-        bas
-        ehashstring = basehash.decode('utf-8')
+        basehashstring = basehash.decode('utf-8')
         basesalt = base64.b64encode(salt)
         basesaltstring = basesalt.decode('utf-8')
         hashString = "{0};{1};{2};{3};{4}".format(basesaltstring, 16384, 8, 1, basehashstring)
