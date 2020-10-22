@@ -14,9 +14,9 @@ from datetime import timedelta
 
 
 @app.route('/login', methods=['GET', 'POST'])
-#@limiter.limit("200/day")
-#@limiter.limit("30/hour")
-#@limiter.limit("5/minute")
+@limiter.limit("200/day")
+@limiter.limit("30/hour")
+@limiter.limit("5/minute")
 @talisman()
 def login():
     if current_user.is_authenticated:
@@ -31,10 +31,8 @@ def login():
             app.logger.info(f'{user} failed to log in')
             return redirect('login')
         login_user(user, remember=form.remember_me.data)
-        #return redirect('index')
         return redirect('verification')
     return render_template('login.html', title='Sign In', form=form)
-    #return render_template('contact.html')
 
 @app.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
@@ -109,6 +107,7 @@ def logout():
 @app.route('/register', methods=['GET', 'POST'])
 @talisman()
 def register():
+    flash('Password must have atleast 10 characters, one capital letter, and one integer')
     if current_user.is_authenticated:
         return redirect('login')
     form = RegistrationForm()
@@ -117,6 +116,27 @@ def register():
         e = escape(str(form.email.data))
         user = User(username=u, email=e)
         p = escape(str(form.password.data))
+        if len(form.password.data) < 10:
+            flash('Password must be atleast 10 characters')
+            return redirect('/register')
+        for bokstav in p:
+            stor = bokstav.isupper()
+            if stor == True:
+                break
+            else:
+                stor = False
+        if stor == False:
+            flash('Password must have atleast one capital letter and one integer')
+            return redirect('/register')
+        for tall in p:
+            tall = bokstav.isdigit()
+            if tall == True:
+                break
+            else:
+                stor = False
+        if tall == False:
+            flash('Password must have atleast one capital letter and one integer')
+            return redirect('/register')
         user.set_password(p)
         db.session.add(user)
         db.session.commit()
@@ -126,7 +146,7 @@ def register():
     
 
 
-@app.route('/mypage/<username>', methods=['GET', 'POST']) #index<username>
+@app.route('/mypage/<username>', methods=['GET', 'POST']) 
 @login_required
 @talisman()
 def mypage(username):
@@ -138,16 +158,9 @@ def mypage(username):
         return redirect('/verification')
     if current_user.username != username:
         app.logger.info(f'{current_user} tried to access {username} account')
-        return redirect(url_for('mypage', username=current_user.username))               #index(username)
+        return redirect(url_for('mypage', username=current_user.username))               
     if current_user.is_authenticated:
         form = TransactionForm()
-    
-    #if current_user.username is not index.username:
-      #  return redirect(url_for('/mypage', username=current_user.username))
-    ##if current_user.is_active is False:
-    #    return redirect('login')
-    #if current_user.username is not Account.owner_name:
-     #   return redirect('index')
     if form.validate_on_submit():
         r = escape(str(form.recieving.data))
         a = int(form.ammount_to_transfer.data)

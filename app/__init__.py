@@ -12,7 +12,6 @@ from logging.handlers import SMTPHandler
 from flask_wtf import CSRFProtect
 from flask_talisman import Talisman
 from datetime import timedelta
-#from flask_seasurf import SeaSurf
 
 
 
@@ -80,7 +79,7 @@ mail_handler = SMTPHandler(
     mailhost='127.0.0.1',
     fromaddr='skvipps@gmail.com',
     toaddrs=['skvipps@gmail.com'],
-    subject='Application Error'
+    subject=f'Application Error'
 )
 mail_handler.setLevel(logging.ERROR)
 mail_handler.setFormatter(logging.Formatter(
