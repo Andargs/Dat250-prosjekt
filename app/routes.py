@@ -129,7 +129,7 @@ def register():
             flash('Password must have atleast one capital letter and one integer')
             return redirect('/register')
         for tall in p:
-            tall = bokstav.isdigit()
+            tall = tall.isdigit()
             if tall == True:
                 break
             else:
