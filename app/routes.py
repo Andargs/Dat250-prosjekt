@@ -126,7 +126,7 @@ def register():
             else:
                 stor = False
         if stor == False:
-            flash('Password must have atleast one capital letter and one integer')
+            flash('Password must have atleast one capital letter')
             return redirect('/register')
         for tall in p:
             tall = tall.isdigit()
@@ -135,7 +135,7 @@ def register():
             else:
                 stor = False
         if tall == False:
-            flash('Password must have atleast one capital letter and one integer')
+            flash('Password must have atleast one integer')
             return redirect('/register')
         user.set_password(p)
         db.session.add(user)
