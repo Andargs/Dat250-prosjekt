@@ -64,9 +64,9 @@ def reset_password_request():
                            title='Reset Password', form=form)
 
 @app.route('/verification', methods=['GET', 'POST'])
-#@limiter.limit("200/day")
-#@limiter.limit("30/hour")
-#@limiter.limit("5/minute")
+@limiter.limit("200/day")
+@limiter.limit("30/hour")
+@limiter.limit("5/minute")
 @talisman()
 def epostverifisering():
     global code
@@ -204,4 +204,4 @@ def index():
 
 @app.before_request
 def before_request():
-    app.permanent_session_lifetime = timedelta(minutes=3)
+    app.permanent_session_lifetime = timedelta(minutes=5)
