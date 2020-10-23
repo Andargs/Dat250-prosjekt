@@ -8,12 +8,13 @@ import base64
 import jwt
 
 
+
 from sqlalchemy_utils import EncryptedType
 from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine
 
 
 
-secret_key = 'secretkey1234' 
+secret_key = '\x9f\xd5\xfef\x98\xf14_M\x99$\x11=T\xccgx\xf5\xd5\xc0\xc2\xf9\xdc\x1d' 
 
 
 

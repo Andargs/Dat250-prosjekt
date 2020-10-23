@@ -11,9 +11,15 @@ from logging.config import dictConfig
 from logging.handlers import SMTPHandler
 from flask_wtf import CSRFProtect
 from flask_talisman import Talisman
+<<<<<<< HEAD
 #from flask_seasurf import SeaSurf
 import psycopg2
 import psycopg2.extras
+=======
+from datetime import timedelta
+
+
+>>>>>>> 012ee76fed2f3b9b7d60f85a333209fa90234d27
 
 
 csrf = CSRFProtect()
@@ -40,8 +46,7 @@ app = Flask(__name__)
 #csrf = SeaSurf(app)
 Talisman(app)
 csp = {
-    'default-src': '\'self\'',
-    'img-src': '*'
+    'default-src': '\'self\''
 }
 talisman = Talisman(app, content_security_policy=csp)
 csrf.init_app(app)
@@ -58,12 +63,16 @@ csrf.init_app(app)
 
 
 
+
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
+login_manager.refresh_view = 'relogin'
+login_manager.needs_refresh_message = (u"Session timedout, please re-login")
+login_manager.needs_refresh_message_category = "info"
 mail = Mail(app)
 mail.init_app(app)
 limiter = Limiter(
@@ -75,7 +84,7 @@ mail_handler = SMTPHandler(
     mailhost='127.0.0.1',
     fromaddr='skvipps@gmail.com',
     toaddrs=['skvipps@gmail.com'],
-    subject='Application Error'
+    subject=f'Application Error'
 )
 mail_handler.setLevel(logging.ERROR)
 mail_handler.setFormatter(logging.Formatter(
