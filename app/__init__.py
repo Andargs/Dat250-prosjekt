@@ -40,8 +40,7 @@ app = Flask(__name__)
 #csrf = SeaSurf(app)
 Talisman(app)
 csp = {
-    'default-src': '\'self\'',
-    'img-src': '*'
+    'default-src': '\'self\''
 }
 talisman = Talisman(app, content_security_policy=csp)
 csrf.init_app(app)
