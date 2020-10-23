@@ -11,15 +11,12 @@ from logging.config import dictConfig
 from logging.handlers import SMTPHandler
 from flask_wtf import CSRFProtect
 from flask_talisman import Talisman
-<<<<<<< HEAD
 #from flask_seasurf import SeaSurf
 import psycopg2
 import psycopg2.extras
-=======
 from datetime import timedelta
 
 
->>>>>>> 012ee76fed2f3b9b7d60f85a333209fa90234d27
 
 
 csrf = CSRFProtect()
