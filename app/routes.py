@@ -154,7 +154,7 @@ def mypage(username):
         sender = User.query.filter_by(id=s).first()
         reciever = User.query.filter_by(username=r).first()
         transaction = Transaction(ammount=a, recieving=r,sender=s)
-        if sender.update_balance(a):
+        if sender.update_balance(a) and reciever is not None:
             db.session.add(transaction)
             reciever.update_balance(-a)
             db.session.commit()

@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, g
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -12,8 +12,8 @@ from logging.handlers import SMTPHandler
 from flask_wtf import CSRFProtect
 from flask_talisman import Talisman
 #from flask_seasurf import SeaSurf
-
-
+import psycopg2
+import psycopg2.extras
 
 
 csrf = CSRFProtect()
