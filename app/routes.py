@@ -55,7 +55,7 @@ def reset_password_request():
         return redirect(url_for('index'))
     form = ResetPasswordRequestForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+        user = User.query.filter_by(email=escape(str(form.email.data))).first()
         if user:
             send_password_reset_email(user)
         flash('Check your email for the instructions to reset your password')
@@ -64,9 +64,9 @@ def reset_password_request():
                            title='Reset Password', form=form)
 
 @app.route('/verification', methods=['GET', 'POST'])
-#@limiter.limit("200/day")
-#@limiter.limit("30/hour")
-#@limiter.limit("5/minute")
+@limiter.limit("200/day")
+@limiter.limit("30/hour")
+@limiter.limit("5/minute")
 @talisman()
 def epostverifisering():
     global code
@@ -168,13 +168,16 @@ def mypage(username):
         sender = User.query.filter_by(id=s).first()
         reciever = User.query.filter_by(username=r).first()
         transaction = Transaction(ammount=a, recieving=r,sender=s)
-        if sender.update_balance(a) and reciever is not None:
-            db.session.add(transaction)
-            reciever.update_balance(-a)
-            db.session.commit()
-            app.logger.info(f'{username} transfered {a},- to {reciever.username}')
+        if reciever is not None
+            if sender.update_balance(a):
+                db.session.add(transaction)
+                reciever.update_balance(-a)
+                db.session.commit()
+                app.logger.info(f'{username} transfered {a},- to {reciever.username}')
+            else:
+                flash("You don't have that amount of money!")
         else:
-            flash("You don't have that amount of money!")
+            flash("Could not find recipient")
         if type(r) != int:
             app.logger.info(f'{username} failed to transfer money. Plausible injection attempt')
         if type(a) != int:
