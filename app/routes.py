@@ -207,4 +207,4 @@ def index():
 
 @app.before_request
 def before_request():
-    app.permanent_session_lifetime = timedelta(minutes=3)
+    app.permanent_session_lifetime = timedelta(minutes=5)
