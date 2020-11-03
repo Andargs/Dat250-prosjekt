@@ -76,8 +76,7 @@ def epostverifisering():
     if current_user.is_authenticated:
         if request.method=='GET':
             k = pyotp.HOTP('base32secret3232')
-            #code = k.at(random.SystemRandom().randint(0, 1000000))
-            code = "123456789"  #endret grunnet heroku feil
+            code = k.at(random.SystemRandom().randint(0, 1000000))
             msg = Message("Feedback", recipients=[current_user.email])
             msg.body = "Code:{}\n Use this code to authenticate the user, any other email you may recive from this email is not accociated with skvipps".format(code)
             mail.send(msg)
@@ -154,9 +153,9 @@ def mypage(username):
     if current_user is None:
         app.logger.info(f'Someone tried to bypass login')
         return redirect('/login')
-    if verified == False:
-        app.logger.info(f'{username} tried to bypass email verification')
-        return redirect('/verification')
+    #if verified == False:
+    #    app.logger.info(f'{username} tried to bypass email verification')
+    #    return redirect('/verification')
     if current_user.username != username:
         app.logger.info(f'{current_user} tried to access {username} account')
         return redirect(url_for('mypage', username=current_user.username))               
