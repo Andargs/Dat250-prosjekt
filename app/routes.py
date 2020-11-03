@@ -76,13 +76,14 @@ def epostverifisering():
     if current_user.is_authenticated:
         if request.method=='GET':
             k = pyotp.HOTP('base32secret3232')
-            code = k.at(random.SystemRandom().randint(0, 1000000))
+            #code = k.at(random.SystemRandom().randint(0, 1000000))
+            code = "123456789"  #endret grunnet heroku feil
             msg = Message("Feedback", recipients=[current_user.email])
             msg.body = "Code:{}\n Use this code to authenticate the user, any other email you may recive from this email is not accociated with skvipps".format(code)
             mail.send(msg)
         else:
             if form.validate_on_submit():
-                u = escape(str(form.code.data))
+                u = escape(form.code.data)
                 if u == code:
                     verified = True
                     return redirect('mypage/<username>')
